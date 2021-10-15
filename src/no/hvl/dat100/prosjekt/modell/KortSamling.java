@@ -22,7 +22,7 @@ public class KortSamling {
 	 */
 	public KortSamling() {
 
-		samling = new Kort[MAKS_KORT];
+		samling = new Kort[MAKS_KORT]; //dette er en default konstruktor for kortsamlingen
 		antall = 0;
 
 	}
@@ -36,7 +36,7 @@ public class KortSamling {
 	 * 
 	 * @return tabell av kort.
 	 */
-	public Kort[] getSamling() {
+	public Kort[] getSamling() { 
 
 		return samling;
 
@@ -69,32 +69,25 @@ public class KortSamling {
 	 */
 	public void leggTil(Kort kort) {
 
-		samling[antall] = kort;
-		antall = antall + 1;
+		samling[antall] = kort;		// antall er posisjonen og begynner på 0
+		antall = antall + 1;		//antall økes
 
 	}
 
 	/**
-	 * Legger alle korta (hele kortstokken) til samlinga. Korta vil vÃ¦re sortert
-	 * slik at de normalt mÃ¥ stokkes fÃ¸r bruk.
+	 * Legger alle korta (hele kortstokken) til samlinga. Korta vil være sortert
+	 * slik at de normalt må stokkes før bruk.
 	 */
 	public void leggTilAlle() {
 
 		
-//		 Husk: bruk Regler.MAKS_KORT_FARGE for Ã¥ fÃ¥ antall kort per farge
+//		 Husk: bruk Regler.MAKS_KORT_FARGE for å få antall kort per farge
 		for (Kortfarge fargeValues : Kortfarge.values()) {
 			for (int i = 1; i <= Regler.MAKS_KORT_FARGE; i++) {
-				Kort newKort = new Kort(fargeValues, i);
+				Kort newKort = new Kort(fargeValues, i);	//her får hvert fargekort alle mulige verdier. f.eks hjerte 1, hjerte 2, hjerte 3 osv
 				leggTil(newKort);
-			}
-//		int start = 0;
-
-//		for (int i = 0; i < Kortfarge.values().length; i++) {
-//			for (int j = 0; j < Regler.MAKS_KORT_FARGE; j++) {
-//				samling[start + j] = new Kort(Kortfarge.values()[i], (j + 1));
-//				antall++;
-//				}
-//			start = start + Regler.MAKS_KORT_FARGE;
+			}	//loop som går igjennom alle mulige kortfarger og lager alle 
+				//mulige antall kort til hver farge, deretter leggess dette til samling.
 		}
 		}
 
@@ -104,8 +97,8 @@ public class KortSamling {
 	 */
 	public void fjernAlle() {
 
-		for (int i = antall - 1; i >= 0; i--) {
-			samling[i] = null;
+		for (int i = antall - 1; i >= 0; i--) {	//går fra siste til forste kort
+			samling[i] = null;					//legger til null i verdi/farge på hver plass (dvs fjerner kort fra slots/plass)
 			antall--;
 		}
 	}
@@ -118,7 +111,10 @@ public class KortSamling {
 	 */
 	public Kort seSiste() {
 
-		return samling[antall - 1];
+		if (antall == 0)
+			return null;
+		else
+			return samling[antall - 1];		//siste kortet i samlingen
 
 	}
 
@@ -128,7 +124,11 @@ public class KortSamling {
 	 * @return siste kortet i samlinga. Dersom samalinga er tom, returneres null.
 	 */
 	public Kort taSiste() {
-
+		if (antall == 0) return null;
+		else {
+			for (int i = MAKS_KORT-1; i >= 0; i--) {
+				if (samling[i] == null) ;
+				else {
 		Kort siste = null;
 		if (antall != 0) {
 			siste = samling[antall - 1];
@@ -138,7 +138,10 @@ public class KortSamling {
 		}
 		return siste;
 	}
-
+			}
+			return null;
+		}
+	}
 	/**
 	 * UndersÃ¸ker om et kort finst i samlinga.
 	 * 
@@ -147,12 +150,12 @@ public class KortSamling {
 	 * @return true om kortet finst i samlinga, false ellers.
 	 */
 	public boolean har(Kort kort) {
-
+		if (kort == null) return false;
 		for (int i = 0; i < antall; i++) {
 			if (samling[i] == kort) {
 				return true;
 			}
-
+			else;
 		}
 		return false;
 	}
@@ -167,16 +170,18 @@ public class KortSamling {
 	 */
 
 	public boolean fjern(Kort kort) {
-		boolean fjern = true;
-		while (fjern == true) {
-			for (int i = 0; i < antall; i++) {
-				if (samling[i] == kort) {
-					samling[i] = samling[antall - 1];
+		
+		
+		if (kort == null) return false;
+		
+			for (int i = 0; i <= MAKS_KORT-1; i++) {
+				if (kort == samling[i]) {
+					samling[i] = null;
 					antall--;
+					return true;
 				}
 			}
-		}
-		return fjern;
+		return false;
 	}
 
 	/**
@@ -187,6 +192,9 @@ public class KortSamling {
 	 */
 	public Kort[] getAllekort() {
 		Kort[] allekort = new Kort[samling.length];
+		for (int i=0; i<samling.length; i++) {
+			allekort[i] = samling[i];
+		}	// denne metoden returnerer en kopi av samling med samme verdier, men forskjellig referanse
 		
 		return allekort;
 

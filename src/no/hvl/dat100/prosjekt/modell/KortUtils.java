@@ -1,9 +1,7 @@
 package no.hvl.dat100.prosjekt.modell;
-
 import java.util.Random;
-
 import no.hvl.dat100.prosjekt.TODO;
-
+import no.hvl.dat100.prosjekt.modell.KortSamling;
 public class KortUtils {
 
 	/**
@@ -15,10 +13,10 @@ public class KortUtils {
 	 * 			samling av kort som skal sorteres. 
 	 */
 	
-	public static void sorter(KortSamling samling) {
+	public static Kort[] sorter(KortSamling samling) {
 		
-		int antallKort = getAntalKort();
-		Kort[] kortTab = getSamling();
+		int antallKort = samling.getAntalKort();
+		Kort[] kortTab = samling.getSamling();
 
 		for (int i = 0; i < antallKort - 1; i++) {
 			int minste = i;
@@ -31,6 +29,8 @@ public class KortUtils {
 			kortTab[i] = kortTab[minste];
 			kortTab[minste] = k;
 		}
+		
+		return kortTab;
 	}
 	/**
 	 * Stokkar en kortsamling. 
@@ -38,18 +38,19 @@ public class KortUtils {
 	 * @param samling
 	 * 			samling av kort som skal stokkes. 
 	 */
-	public static void stokk(KortSamling samling) {
+	public static Kort[] stokk(KortSamling samling) {
+		int antallKort = samling.getAntalKort();
+		Kort [] midlertidigSamling = samling.getSamling();
+		
 		
 		Random rand = new Random();
 		for (int i = 0; i < antallKort; i++) {
-			Kort gammel = samling[i];
-			int index = rand.nextInt(antall - i) + i;
-			samling[i] = samling[index];
-			samling[index] = gammel;
-		}
+			Kort midlertidigKort = midlertidigSamling[i];
+			int index = rand.nextInt(antallKort - i) + i;
+			midlertidigSamling[i] = midlertidigSamling[index];
+			midlertidigSamling[index] = midlertidigKort;
+	}	
+		return midlertidigSamling;
 		
-		throw new UnsupportedOperationException(TODO.method());
-		// TODO - END
-	}
-	
+}
 }
