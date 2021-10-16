@@ -155,11 +155,11 @@ public class Bord {
 	public void snuTilBunken() {
 		if (bunkeFra.erTom()) {
 		Kort sisteTilBunkeKort = bunkeTil.taSiste();
-		Kort[] allCardofBunkeTilLeftRandomized = KortUtils.stokk(bunkeTil);
-		int i = allCardofBunkeTilLeftRandomized.length-1;
+		Kort[] alleKortFraBunketilVenstreRandomisert = KortUtils.stokk(bunkeTil);
+		int i = alleKortFraBunketilVenstreRandomisert.length-1;
 		
 		while (!bunkeTil.erTom()) {
-			bunkeFra.leggTil(allCardofBunkeTilLeftRandomized[i]);
+			bunkeFra.leggTil(alleKortFraBunketilVenstreRandomisert[i]);
 			i--;
 		}
 		bunkeTil.leggTil(sisteTilBunkeKort);
