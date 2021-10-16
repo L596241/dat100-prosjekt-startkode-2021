@@ -151,11 +151,11 @@ public class Kort implements Comparable<Kort> {
 	 */
 	public int compareTo(Kort kort) {
 		
-		if (this.farge != kort.farge) {
-			return this.farge.ordinal() - kort.farge.ordinal();
-		} else {
+//		if (this.farge != kort.farge) {
+//			return this.farge.ordinal() - kort.farge.ordinal();
+//		} else {
 			return this.verdi - kort.verdi;
-		}
+//		}
 		
 	}
 
