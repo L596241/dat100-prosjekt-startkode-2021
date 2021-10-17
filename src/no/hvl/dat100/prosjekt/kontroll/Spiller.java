@@ -6,6 +6,7 @@ import no.hvl.dat100.prosjekt.TODO;
 import no.hvl.dat100.prosjekt.kontroll.spill.Spillere;
 import no.hvl.dat100.prosjekt.modell.Kort;
 
+
 /**
  * Abstrakt klasse som implementerer alle metodene i kontrakten (interfacet) ISpiller,
  * bortsett fra nesteHandling(). Dette er grunnen til at klassen er abstrakt.
@@ -21,6 +22,7 @@ public abstract class Spiller implements ISpiller {
 	// hand for spilleren (samling)
 	private KortSamling hand; 
 	
+	
 	// antall trekk spilleren har gjort fra fra-bunken
 	private int antalltrekk; 
 	
@@ -33,10 +35,9 @@ public abstract class Spiller implements ISpiller {
 	 */
 	public Spiller() {
 		
-		// TODO - START
-		
-		throw new UnsupportedOperationException(TODO.constructor("Spiller"));
-		// TODO - END
+		hand = new KortSamling();
+		antalltrekk = 0;
+		spiller = Spillere.INGEN;
 	}
 
 	/**
@@ -48,98 +49,65 @@ public abstract class Spiller implements ISpiller {
 	 */
 	public Spiller(Spillere spiller) {
 		
-		// TODO - START
-
-		throw new UnsupportedOperationException(TODO.constructor("Spiller"));
-		// TODO - END
+		hand = new KortSamling();
+		antalltrekk = 0;
+		this.spiller = spiller;
 	}
 
 	public int getAntallKort() {
 		
-		// TODO - START
-		
-		throw new UnsupportedOperationException(TODO.method());
-
-		// TODO - END
+		return hand.getAntalKort();
 	}
 
 	public KortSamling getHand() {
 		
-		// TODO - START
-		
-		throw new UnsupportedOperationException(TODO.method());
-
-		// TODO - END
+		return hand;
 	}
 
 	public int getAntallTrekk() {
 		
-		// TODO - START
-		
-		throw new UnsupportedOperationException(TODO.method());
-
-		// TODO - END
+		return antalltrekk;
 	}
 
 	public Spillere hvem() {
 		
-		// TODO - START
-		
-		throw new UnsupportedOperationException(TODO.method());
-
-		// TODO - END
+		return spiller;
 		
 	}
 
 	public void setAntallTrekk(int t) {
 		
-		// TODO - START
-		
-		throw new UnsupportedOperationException(TODO.method());
-		// TODO - END
+		this.antalltrekk = t;
 	}
 
 	public boolean erFerdig() {
 		
-		// TODO - START
-		
-		throw new UnsupportedOperationException(TODO.method());
-		// TODO - END
-		
+		if (getAntallKort() == 0) {
+			return true;
+		}
+		return false;
 	}
 
 	public void leggTilKort(Kort kort) {
 		
-		// TODO - START
-		
-		throw new UnsupportedOperationException(TODO.method());
-		// TODO - END
+		hand.leggTil(kort);
 		
 	}
 
 	public void fjernKort(Kort kort) {
 		
-		// TODO - START
-		
-		throw new UnsupportedOperationException(TODO.method());
-		// TODO - END
+		hand.fjern(kort);
 		
 	}
 
 	public void fjernAlleKort() {
 		
-		// TODO - START
-		
-		throw new UnsupportedOperationException(TODO.method());
-		// TODO - END
+		hand.fjernAlle();
 	}
 
 	public void trekker(Kort kort) {
 		
-		// TODO - START
-		
-		throw new UnsupportedOperationException(TODO.method());
-		// TODO - END
-		
+		hand.leggTil(kort);
+		antalltrekk = antalltrekk + 1;
 	}
 }
