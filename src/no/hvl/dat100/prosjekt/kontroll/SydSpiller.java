@@ -1,11 +1,14 @@
 package no.hvl.dat100.prosjekt.kontroll;
 
+import java.util.Random;
+
 import no.hvl.dat100.prosjekt.TODO;
 import no.hvl.dat100.prosjekt.kontroll.dommer.Regler;
 import no.hvl.dat100.prosjekt.kontroll.spill.Handling;
 import no.hvl.dat100.prosjekt.kontroll.spill.HandlingsType;
 import no.hvl.dat100.prosjekt.kontroll.spill.Spillere;
 import no.hvl.dat100.prosjekt.modell.Kort;
+import no.hvl.dat100.prosjekt.modell.KortSamling;
 
 /**
  * Klasse som for Ã¥ representere en vriÃ¥tter syd-spiller. Strategien er Ã¥ lete
@@ -36,12 +39,51 @@ public class SydSpiller extends Spiller {
 	 */
 	@Override
 	public Handling nesteHandling(Kort topp) {
+		//Dette er nesten samme kode som nestehandling under spill
+//		Oppretter arrayLister for de kortene vi har (og eventuelt kan spille) (Attere kan uansett spilles)
+				Kort[] hand = getHand().getAllekort();
+				KortSamling lovlige = new KortSamling();
+				KortSamling attere = new KortSamling();
 
-		// TODO - START
-		/* first-fit strategi */
-	
-		throw new UnsupportedOperationException(TODO.method());
-	
-		// TODO - END
+	// Nøstet for-løkke for å finne ut hvilke kort som kan spilles
+	//Ser igjennom hva vi har på handen (passer på at handen og bord var opprettet riktig) -- Hvis vi hadde en feil, ville dette blitt null
+				for (Kort kort : hand) {
+					if (Regler.kanLeggeNed(kort, topp)) {
+						if (Regler.atter(kort)) {
+							attere.leggTil(kort);
+						} else {
+							lovlige.leggTil(kort);
+						} //To forskjellige bunker lages, og lagrer kortene som kan spilles inklusiv attere (8)
+					}
+				}
+
+				Kort spill = null;
+				Kort[] spillFra = null;
+
+				if (!lovlige.erTom()) {	//Hvis de to forskjellige bunkene ikke er tomme, samler vi det i en arrayliste med kort
+					spillFra = lovlige.getAllekort();
+				} else if (!attere.erTom())  {
+					spillFra = attere.getAllekort();
+				}
+
+				Handling handling = null; //Lager en handlig (som kan være hva som helst)
+				
+				if (spillFra != null) { //Hvis jeg har noe som kan spilles: (SpillFra er ikke null)
+					//vil et randomkort bli lagt ned
+					
+					Random r = new Random();
+					int p = r.nextInt(spillFra.length);
+					spill = spillFra[p];
+					handling = new Handling(HandlingsType.LEGGNED, spill);
+					// setAntallTrekk(0);
+					
+				} else if (getAntallTrekk() < Regler.maksTrekk()) {		 //hvis spiller ikke har noe som kan spilles: (spillfra er null)
+					handling = new Handling(HandlingsType.TREKK, null);	//og det er plass til å trekke et kort, da trekker jeg.
+				} else {
+					handling = new Handling(HandlingsType.FORBI, null);	//ellers er eneste mulighet å passere (forbi)
+					// setAntallTrekk(0);
+				}
+
+				return handling;
+			}
 	}
-}

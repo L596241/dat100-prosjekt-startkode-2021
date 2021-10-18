@@ -2,15 +2,17 @@ package no.hvl.dat100.prosjekt.kontroll;
 
 
 import java.util.ArrayList;
+import java.util.Random;
+import java.util.stream.IntStream;
 
 import no.hvl.dat100.prosjekt.modell.KortSamling;
 import no.hvl.dat100.prosjekt.TODO;
 import no.hvl.dat100.prosjekt.kontroll.dommer.Regler;
 import no.hvl.dat100.prosjekt.kontroll.spill.Handling;
+import no.hvl.dat100.prosjekt.kontroll.spill.HandlingsType;
 import no.hvl.dat100.prosjekt.kontroll.spill.Spillere;
 import no.hvl.dat100.prosjekt.modell.Kort;
 import no.hvl.dat100.prosjekt.modell.KortUtils;
-import no.hvl.dat100.prosjekt.kontroll.Bord;
 
 /**
  * Klassen har objektvariaber som er referanser til de spillerne, nord og syd
@@ -29,7 +31,10 @@ public class Spill {
 	public final static int ANTALL_KORT_START = Regler.ANTALL_KORT_START;
 	
 	public Spill() {
-		
+
+		 nord = new NordSpiller(Spillere.NORD);
+		 syd = new SydSpiller(Spillere.SYD);
+		 bord = new Bord();
 	}
 	
 	/**
@@ -74,14 +79,10 @@ public class Spill {
 	 */
 	public void start() {
 		
-		nord = new RandomSpiller(Spillere.NORD);
-		syd = new FirstFitSpiller(Spillere.SYD);
-		bunkeTil = new Bunke();
-		bunkeFra = new Bunke();
-		bunkeFra.leggTilAlle();
-		bunkeFra.stokk();
 		delutKort();
-		vendOverste();
+		bord.vendOversteFraBunke();
+//		}
+		// Tar det siste kortet fra fra-bunke og legges på til-bunke
 	}
 
 	/**
@@ -89,10 +90,11 @@ public class Spill {
 	 * 
 	 */
 	private void delutKort() {
-		for (int i = 1; i <= Regler.ANTALL_KORT_START; i++) {
-			nord.leggTilKort(bunkeFra.trekk());
-			syd.leggTilKort(bunkeFra.trekk());
-	}}
+		for (int i = 0; i < Regler.ANTALL_KORT_START; i++) {
+			nord.leggTilKort(bord.taOversteFraBunke());
+			syd.leggTilKort(bord.taOversteFraBunke());
+	}
+		}
 
 	/**
 	 * Trekker et kort fra fra-bunken til spilleren gitt som parameter. Om
@@ -106,14 +108,15 @@ public class Spill {
 	 */
 	public Kort trekkFraBunke(ISpiller spiller) {
 
-		if (bunkefraTom()) {
-			snuTilBunken();
+		Kort sisteKort = bord.taOversteFraBunke();
+		if(sisteKort == null) {
+			bord.snuTilBunken();
+			sisteKort = bord.taOversteFraBunke();
 		}
-			Kort k=bunkeFra.topp();
-			spiller.trekker(bunkeFra.trekk());
-			return k;
+		spiller.trekker(sisteKort);
+		return sisteKort;
+		
 	}
-
 	/**
 	 * Gir neste handling for en spiller (spilt et kort, trekker et kort, forbi)
 	 * 
@@ -123,10 +126,54 @@ public class Spill {
 	 * @return handlingen som blir utfÃ¸rt.
 	 */
 	public Handling nesteHandling(ISpiller spiller) {
+	
+		//	Oppretter arrayLister for de kortene vi har (og eventuelt kan spille) (Attere kan uansett spilles)
+		Kort[] hand = spiller.getHand().getAllekort();
+		KortSamling lovlige = new KortSamling();
+		KortSamling attere = new KortSamling();
 		
-		return spiller.nesteHandling(bunkeTil.topp());
+		// Nøstet for-løkke for å finne ut hvilke kort som kan spilles
+		//Ser igjennom hva vi har på handen (passer på at handen og bord var opprettet riktig) -- Hvis vi hadde en feil, ville dette blitt null
+		for (Kort kort : hand) {
+			if(kort != null && bord.seOversteBunkeTil() != null) {
+				if (Regler.kanLeggeNed(kort, bord.seOversteBunkeTil())) {
+					if (Regler.atter(kort)) {
+						attere.leggTil(kort);
+					} else {
+						lovlige.leggTil(kort);
+					}
+				}	//To forskjellige bunker lages, og lagrer kortene som kan spilles inklusiv attere (8)
+			}		
+		}
+		
+		Kort spill = null;
+		Kort[] spillFra = null;
+
+		if (!lovlige.erTom()) { 	//Hvis de to forskjellige bunkene ikke er tomme, samler vi det i en arrayliste med kort
+			spillFra = lovlige.getAllekort();
+		} else if (!attere.erTom())  {
+			spillFra = attere.getAllekort();
+		}
+
+		Handling handling = null;	//Lager en handlig (som kan være hva som helst)
+		
+		if (spillFra != null) {	//Hvis jeg har noe som kan spilles: (SpillFra er ikke null)
+								//vil et randomkort bli lagt ned
+			Random random = new Random();
+			int p = random.nextInt(spillFra.length);
+			spill = spillFra[p];
+			handling = new Handling(HandlingsType.LEGGNED, spill);
+			
+		} else if (spiller.getAntallTrekk() < Regler.maksTrekk()) {	//hvis jeg ikke har noe som kan spilles: (spillfra er null)
+			handling = new Handling(HandlingsType.TREKK, null);		//og jeg har plass til å trekke et kort, da trekker jeg.
+		} else {						
+			handling = new Handling(HandlingsType.FORBI, null);		//ellers er eneste mulighet å passere (forbi)
+		}
+
+		return handling;
 		
 	}
+		
 
 	/**
 	 * Metoden spiller et kort. Den sjekker at spiller har kortet. Dersom det er
@@ -141,16 +188,17 @@ public class Spill {
 	 * @return true dersom spilleren har kortet, false ellers.
 	 */
 	public boolean leggnedKort(ISpiller spiller, Kort kort) {
+			
+			// TODO - START
+			if(spiller.getHand().har(kort)) {
+				bord.leggNedBunkeTil(kort);
+				spiller.fjernKort(kort);
+				spiller.setAntallTrekk(0);
+				return true;
+			} else return false;
 		
-		if (spiller.getHand().har(kort)) {//siden "har" methoden ikke er implementert i "ISpiller" ,må vi bruke "getHand()"  
-			spiller.fjernKort(kort);
-			spiller.getHand();
-			bunkeTil.leggTil(kort);
-			spiller.setAntallTrekk(0);
-			return true;
-		}
-		return false;
 	}
+		
 
 	/**
 	 * Metode for Ã¥ si forbi. MÃ¥ nullstille antall ganger spilleren har trukket
@@ -176,19 +224,21 @@ public class Spill {
 	 * @return kort som trekkes, kort som spilles eller null ved forbi.
 	 */
 	public Kort utforHandling(ISpiller spiller, Handling handling) {
-
-		// TODO - START
-		Kort k = null;
 		
-		if (handling.getType()== HandlingsType.LEGGNED){
-			k = handling.getKort();
-			leggnedKort(spiller, k);
-		}else if (handling.getType()== HandlingsType.TREKK) {
-				k = trekkFraBunke(spiller);//DET BLIR ET STORT PROBLEM. HVIS VI RETUNERE "handling.getKort()" FORDI KORTET ER NULL I"HandlingsType.TREKK"
-		}else if (handling.getType()== HandlingsType.FORBI) {
+		//Her kaller vi funksjonene ut ifra handling vi selv gjør i spillet
+		Kort kort = null;
+		if(handling.getType() == HandlingsType.FORBI) {
 			forbiSpiller(spiller);
+			kort = null;
+		} else if(handling.getType() == HandlingsType.LEGGNED) {
+			leggnedKort(spiller,handling.getKort());
+			kort = handling.getKort();
+		} else if(handling.getType() == HandlingsType.TREKK) {
+			kort = trekkFraBunke(spiller);
 		}
-		return k;
+		
+		return kort;
+
 		// Hint: del opp i de tre mulige handlinger og vurder 
 		// om noen andre private metoder i klassen kan brukes
 		// til Ã¥ implementere denne metoden

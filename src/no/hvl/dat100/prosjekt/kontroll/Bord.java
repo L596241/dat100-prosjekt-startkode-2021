@@ -21,16 +21,12 @@ public class Bord {
 	 * Alle kortene legges til fra-bunken. 
 	 */
 	public Bord() {
-		KortSamling bunkeFraRandom = new KortSamling();
-		bunkeFraRandom.leggTilAlle();
-		Kort[] KortArrayRandomized = KortUtils.stokk(bunkeFraRandom);
+		
 		bunkeFra = new KortSamling();
-		for(int i = 0; i < KortArrayRandomized.length; i++) {
-			bunkeFra.leggTil(KortArrayRandomized[i]);
-		}
-		
+		bunkeFra.leggTilAlle();
+		KortUtils.stokk(bunkeFra);
 		bunkeTil = new KortSamling();
-		
+
 	}
 	
 	/**
@@ -75,7 +71,6 @@ public class Bord {
 	public boolean bunkefraTom() {
 		
 		boolean tomBunke = bunkeFra.erTom();
-	
 		return tomBunke;
 		
 	}
@@ -88,7 +83,7 @@ public class Bord {
 	public int antallBunkeFra() {
 		
 		int antallFraBunke = bunkeFra.getAntalKort();
-			return antallFraBunke;
+		return antallFraBunke;
 	}
 
 	/**
@@ -99,27 +94,20 @@ public class Bord {
 	public int antallBunkeTil() {
 		
 		int antallTilBunke = bunkeTil.getAntalKort();
-				return antallTilBunke;
+		return antallTilBunke;
 	}
 	
 	/**
-	 * Tar øverste kortet fra fra-bunken og legger dettte til til-bunken (med
+	 * Tar Overste kortet fra fra-bunken og legger dettte til til-bunken (med
 	 * billedsiden opp, men det trenger ikke gruppen tenke på).
 	 */
 	public void vendOversteFraBunke() {
 		
-		Kort[] taVersteSortert = KortUtils.sorter(bunkeFra);
-		for (int i=0; i<taVersteSortert.length; i++) {
-			
-			if (taVersteSortert[i].getVerdi() > 1) {
-				bunkeTil.leggTil(taVersteSortert[i]);
-				bunkeFra.fjern(taVersteSortert[i]);
-				break;
-			}
-			
-		}
+		Kort sisteKortBunkeFra = bunkeFra.taSiste();
+		bunkeTil.leggTil(sisteKortBunkeFra);
 		
 	}
+
 		
 	/**
 	 * Tar �verste kortet fra fra-bunken.
@@ -141,9 +129,9 @@ public class Bord {
 	 * @return peker/referanse til øverste kortet i til-bunken.
 	 */
 	public Kort seOversteBunkeTil() {
-		
-		Kort seoverste = bunkeFra.seSiste();
-		return seoverste;
+	
+		Kort seOverste = bunkeTil.seSiste();
+		return seOverste;
 	}
 	
 	/**
@@ -153,19 +141,23 @@ public class Bord {
 	 * til-bunken. Det vil nå være det eneste kortet i til-bunken.
 	 */
 	public void snuTilBunken() {
-		if (bunkeFra.erTom()) {
-		Kort sisteTilBunkeKort = bunkeTil.taSiste();
-		Kort[] alleKortFraBunketilVenstreRandomisert = KortUtils.stokk(bunkeTil);
-		int i = alleKortFraBunketilVenstreRandomisert.length-1;
 		
-		while (!bunkeTil.erTom()) {
-			bunkeFra.leggTil(alleKortFraBunketilVenstreRandomisert[i]);
-			i--;
+		if(!bunkeFra.erTom()) return;
+		
+		Kort sisteTilBunkeKort = bunkeTil.taSiste();
+		Kort[] alleKortFraBunketilVenstre = bunkeTil.getAllekort();
+		
+		for(int i = 0; i < bunkeTil.getAntalKort(); i++) {
+			bunkeFra.leggTil(alleKortFraBunketilVenstre[i]);
 		}
+		
+		KortUtils.stokk(bunkeFra);
+		
+		bunkeTil.fjernAlle();
 		bunkeTil.leggTil(sisteTilBunkeKort);
-		}
 		
 	}
+
 		
 	/**
 	 * Metode som legger et kort i til-bunken. 

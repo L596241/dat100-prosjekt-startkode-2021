@@ -34,11 +34,12 @@ public abstract class Spiller implements ISpiller {
 	 * antalltrekk som 0 og setter spiller til Spillere.INGEN.
 	 */
 	public Spiller() {
-		
-		hand = new KortSamling();
 		antalltrekk = 0;
 		spiller = Spillere.INGEN;
+		hand = new KortSamling();
+		hand.fjernAlle();
 	}
+
 
 	/**
 	 * Konstruktør der vi kan sette hvilken spiller det er (NORD, SYD eller
@@ -49,9 +50,10 @@ public abstract class Spiller implements ISpiller {
 	 */
 	public Spiller(Spillere spiller) {
 		
-		hand = new KortSamling();
-		antalltrekk = 0;
 		this.spiller = spiller;
+		antalltrekk = 0;
+		hand = new KortSamling();
+		hand.fjernAlle();
 	}
 
 	public int getAntallKort() {
@@ -81,11 +83,8 @@ public abstract class Spiller implements ISpiller {
 	}
 
 	public boolean erFerdig() {
+		return hand.erTom();
 		
-		if (getAntallKort() == 0) {
-			return true;
-		}
-		return false;
 	}
 
 	public void leggTilKort(Kort kort) {
@@ -109,5 +108,6 @@ public abstract class Spiller implements ISpiller {
 		
 		hand.leggTil(kort);
 		antalltrekk = antalltrekk + 1;
+	
 	}
 }

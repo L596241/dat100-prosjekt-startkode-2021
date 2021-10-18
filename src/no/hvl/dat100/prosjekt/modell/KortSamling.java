@@ -79,17 +79,18 @@ public class KortSamling {
 	 * slik at de normalt må stokkes før bruk.
 	 */
 	public void leggTilAlle() {
-
-		
 //		 Husk: bruk Regler.MAKS_KORT_FARGE for å få antall kort per farge
-		for (Kortfarge fargeValues : Kortfarge.values()) {
-			for (int i = 1; i <= Regler.MAKS_KORT_FARGE; i++) {
-				Kort newKort = new Kort(fargeValues, i);	//her får hvert fargekort alle mulige verdier. f.eks hjerte 1, hjerte 2, hjerte 3 osv
-				leggTil(newKort);
-			}	//loop som går igjennom alle mulige kortfarger og lager alle 
-				//mulige antall kort til hver farge, deretter leggess dette til samling.
-		}
-		}
+			for (Kortfarge fargeValues : Kortfarge.values()) {
+				for (int i = 1; i <= Regler.MAKS_KORT_FARGE; i++) {
+					Kort newKort = new Kort(fargeValues, i);	//her får hvert fargekort alle mulige verdier. f.eks hjerte 1, hjerte 2, hjerte 3 osv
+					leggTil(newKort);
+				}	//loop som går igjennom alle mulige kortfarger og lager alle 
+					//mulige antall kort til hver farge, deretter leggess dette til samling.
+			}
+		
+	}
+//		
+//		}
 
 
 	/**
@@ -97,11 +98,16 @@ public class KortSamling {
 	 */
 	public void fjernAlle() {
 
-		for (int i = antall - 1; i >= 0; i--) {	//går fra siste til forste kort
-			samling[i] = null;					//legger til null i verdi/farge på hver plass (dvs fjerner kort fra slots/plass)
-			antall--;
+		for (int i = antall - 1; i >= 0; i--) 
+		{	//går fra siste til forste kort
+		samling[i] = null;						//legger til null i verdi/farge på hver plass (dvs fjerner kort fra slots/plass)
+		antall--;
 		}
+		
 	}
+
+
+//	}
 
 	/**
 	 * Ser pÃ¥ siste kortet i samlinga.
@@ -110,12 +116,11 @@ public class KortSamling {
 	 *         er tom, returneres null.
 	 */
 	public Kort seSiste() {
-
-		if (antall == 0)
-			return null;
-		else
-			return samling[antall - 1];		//siste kortet i samlingen
-
+	
+		if(antall == 0) return null; // Dersom kortsamling er tom
+		Kort siste = samling[antall - 1];
+		return siste;
+		
 	}
 
 	/**
@@ -124,24 +129,13 @@ public class KortSamling {
 	 * @return siste kortet i samlinga. Dersom samalinga er tom, returneres null.
 	 */
 	public Kort taSiste() {
-		if (antall == 0) return null;
-		else {
-			for (int i = MAKS_KORT-1; i >= 0; i--) {
-				if (samling[i] == null) ;
-				else {
-		Kort siste = null;
-		if (antall != 0) {
-			siste = samling[antall - 1];
-			samling[antall - 1] = null;
-			antall--;
-			return siste;
-		}
-		return siste;
+		if(antall == 0) return null;
+		Kort sisteKort = samling [antall - 1];
+		samling [antall - 1] = null;
+		antall--;				
+		return sisteKort;
 	}
-			}
-			return null;
-		}
-	}
+//		
 	/**
 	 * UndersÃ¸ker om et kort finst i samlinga.
 	 * 
@@ -150,15 +144,18 @@ public class KortSamling {
 	 * @return true om kortet finst i samlinga, false ellers.
 	 */
 	public boolean har(Kort kort) {
-		if (kort == null) return false;
-		for (int i = 0; i < antall; i++) {
-			if (samling[i] == kort) {
-				return true;
+		boolean har = false;
+		if(kort == null) 
+			return false;
+		for(int i = 0; i < samling.length; i++) {
+			if(samling[i] != null) {
+				if(kort.lik(samling[i])) 
+					har = true;
 			}
-			else;
 		}
-		return false;
+		return har;
 	}
+
 
 	/**
 	 * Fjernar et kort frÃ¥ samlinga. Dersom kortet ikke finnest i samlinga, skjer
@@ -171,18 +168,21 @@ public class KortSamling {
 
 	public boolean fjern(Kort kort) {
 		
-		
-		if (kort == null) return false;
-		
-			for (int i = 0; i <= MAKS_KORT-1; i++) {
-				if (kort == samling[i]) {
-					samling[i] = null;
+		boolean fjernet = false;
+		if(kort == null) return fjernet;
+		if(antall < 1) return fjernet;
+		for(int i = 0; i < MAKS_KORT; i++) {
+			if(samling[i] != null) {
+				if(kort.lik(samling[i])) {
 					antall--;
-					return true;
+					samling [i] = null;
+					fjernet = true;
 				}
 			}
-		return false;
+		}
+		return fjernet;
 	}
+
 
 	/**
 	 * Gir kortene som en tabell av samme lengde som antall kort i samlingen
@@ -191,13 +191,16 @@ public class KortSamling {
 	 *         som i kortsamlinga.
 	 */
 	public Kort[] getAllekort() {
-		Kort[] allekort = new Kort[samling.length];
+
+		Kort[] alleKort = new Kort[(antall)];
+		int a = 0;
 		for (int i=0; i<samling.length; i++) {
-			allekort[i] = samling[i];
-		}	// denne metoden returnerer en kopi av samling med samme verdier, men forskjellig referanse
-		
-		return allekort;
+			if(samling[i] != null) {
+				alleKort[a] = samling[i]; // denne metoden returnerer en kopi av samling med samme verdier, men forskjellig referanse	
+				a++;
+			}
+		}
 
-	}
-
+		return alleKort;
+}
 }

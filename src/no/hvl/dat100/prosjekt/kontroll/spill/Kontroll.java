@@ -2,6 +2,7 @@ package no.hvl.dat100.prosjekt.kontroll.spill;
 
 import java.util.ArrayList;
 
+import no.hvl.dat100.prosjekt.TODO;
 import no.hvl.dat100.prosjekt.kontroll.ISpiller;
 import no.hvl.dat100.prosjekt.kontroll.Spill;
 import no.hvl.dat100.prosjekt.kontroll.dommer.Dommer;
@@ -73,7 +74,9 @@ public class Kontroll {
 	}
 
 	public Kort hentOverste() {
-		return spill.getBord().seOversteBunkeTil();
+		Kort OversteKort = spill.getBord().seOversteBunkeTil();
+		
+		return OversteKort;
 	}
 
 	public boolean bunketilTom() {
@@ -220,9 +223,10 @@ public class Kontroll {
 	private boolean spillkortSyd(Kort kort) {
 		
 		// TODO - START
-		return spill.leggnedKort(spill.getSyd(), kort);
 		
-		// throw new UnsupportedOperationException(TODO.method());
+			return spill.leggnedKort(spill.getSyd(), kort);
+		
+		// 
 		// return null;
 		// TODO - END
 	}
@@ -237,12 +241,12 @@ public class Kontroll {
 		Handling handling = new Handling(HandlingsType.LEGGNED, kort);
 
 		ok = dommer.sjekkHandling(spiller, handling);
-
 		if (ok) {
 			spillkortSyd(kort);
 			dommer.utforHandling(spiller, handling, null);
 			Tur.skiftSpiller();
 			spiller.setAntallTrekk(0);
+			
 		}
 
 		return ok;
